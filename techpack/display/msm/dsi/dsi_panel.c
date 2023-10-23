@@ -715,12 +715,15 @@ static int dsi_panel_update_backlight(struct dsi_panel *panel,
 	dsi = &panel->mipi_device;
 	bl = &panel->bl_config;
 
+	//bl_lvl = bl_lvl * 9 / 10;
+	if (panel->bl_config.bl_move_high_8b) {
+        	bl_lvl = bl_lvl << 5;
+		bl_lvl = (((bl_lvl & 0xff00)) | ((bl_lvl & 0xe0) >> 4));
+	}
+
 	if (panel->bl_config.bl_inverted_dbv)
 		bl_lvl = (((bl_lvl & 0xff) << 8) | (bl_lvl >> 8));
 
-	if (panel->bl_config.bl_move_high_8b)
-		bl_lvl = bl_lvl >> 8;
-	
 	if (panel->bl_config.bl_dcs_subtype == 0xc2)
 		rc = dsi_panel_dcs_set_display_brightness_c2(dsi, bl_lvl);
 	else
@@ -837,7 +840,7 @@ int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl)
 	if (panel->host_config.ext_bridge_mode)
 		return 0;
 
-	DSI_DEBUG("backlight type:%d lvl:%d\n", bl->type, bl_lvl);
+	DSI_INFO("backlight type:%d bl-lvl:%d\n", bl->type, bl_lvl);
 	switch (bl->type) {
 	case DSI_BACKLIGHT_WLED:
 		rc = backlight_device_set_brightness(bl->raw_bd, bl_lvl);
@@ -4850,6 +4853,7 @@ error:
 	return rc;
 }
 
+#ifdef CONFIG_TARGET_PROJECT_K7T
 void dsi_set_backlight_control(struct dsi_panel *panel,
 			 struct dsi_display_mode *adj_mode)
 {
@@ -4859,11 +4863,8 @@ void dsi_set_backlight_control(struct dsi_panel *panel,
 		pr_err("Invalid params\n");
 		return;
 	}
-#ifdef CONFIG_TARGET_PROJECT_C3Q
- 
-#endif
 	mutex_lock(&panel->panel_lock);
-#ifdef CONFIG_TARGET_PROJECT_K7T
+
 	if (adj_mode->timing.refresh_rate == 90) {
 		rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_SET_DISP_BC_90HZ);
 		if (rc)
@@ -4883,11 +4884,12 @@ void dsi_set_backlight_control(struct dsi_panel *panel,
 			DSI_INFO("%s: refresh_rate = %d\n", __func__, adj_mode->timing.refresh_rate);
 		}
 	}
-#endif
+
 	mutex_unlock(&panel->panel_lock);
 
 	return;
 }
+#endif
 
 int dsi_panel_apply_hbm_mode(struct dsi_panel *panel)
 {
