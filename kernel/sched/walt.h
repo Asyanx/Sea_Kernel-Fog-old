@@ -365,7 +365,7 @@ static inline unsigned int walt_nr_rtg_high_prio(int cpu)
 
 extern bool is_rtgb_active(void);
 extern u64 get_rtgb_active_time(void);
-#define SCHED_PRINT(arg)        printk_deferred("%s=%llu", #arg, arg)
+#define SCHED_PRINT(arg)        printk_deferred("%s=%u", #arg, arg)
 #define STRG(arg)               #arg
 
 static inline void walt_task_dump(struct task_struct *p)
