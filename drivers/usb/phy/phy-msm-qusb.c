@@ -1191,7 +1191,7 @@ static int qusb_phy_vbus_notifier(struct notifier_block *nb,
 	}
 
 	qphy->vbus_active = !!event;
-	dev_dbg(qphy->phy.dev, "Got VBUS notification: %u\n", event);
+	dev_dbg(qphy->phy.dev, "Got VBUS notification: %lu\n", event);
 	queue_delayed_work(system_freezable_wq, &qphy->port_det_w, 0);
 
 	return NOTIFY_DONE;
@@ -1209,7 +1209,7 @@ static int qusb_phy_id_notifier(struct notifier_block *nb,
 	}
 
 	qphy->id_state = !event;
-	dev_dbg(qphy->phy.dev, "Got id notification: %u\n", event);
+	dev_dbg(qphy->phy.dev, "Got id notification: %lu\n", event);
 	queue_delayed_work(system_freezable_wq, &qphy->port_det_w, 0);
 
 	return NOTIFY_DONE;
