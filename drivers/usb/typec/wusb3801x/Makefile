@@ -2,5 +2,5 @@
 # (the ones that don't fit into any other categories)
 #
 #ccflags-$(CONFIG_USB_DEBUG) := -DDEBUG
-ccflags-y := -DDEBUG
+ccflags-y := 
 obj-y           += wusb3801x.o
