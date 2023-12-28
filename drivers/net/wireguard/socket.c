@@ -160,7 +160,6 @@ out:
 	rcu_read_unlock_bh();
 	return ret;
 #else
-	kfree_skb(skb);
 	return -EAFNOSUPPORT;
 #endif
 }
