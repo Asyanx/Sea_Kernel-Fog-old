@@ -708,17 +708,17 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, zero-length-bounds)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS   += -O3 -Wno-error
 else
-KBUILD_CFLAGS   += -pipe -O3 -mcpu=cortex-a73.cortex-a53+crc+crypto -mtune=cortex-a73.cortex-a53 -funswitch-loops -funroll-all-loops -fpeel-loops -fsplit-loops -fversion-loops-for-strides -fsection-anchors -ftracer -mno-fix-cortex-a53-835769 -mno-fix-cortex-a53-843419 -freg-struct-return
+KBUILD_CFLAGS   += -pipe -O3 
 endif
 
 # Tell compiler to tune the performance of the code for a specified
 # target processor
 ifeq ($(cc-name),gcc)
-KBUILD_CFLAGS += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
-KBUILD_AFLAGS += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
+KBUILD_CFLAGS += -mcpu=cortex-a73.cortex-a53+crc+crypto -mtune=cortex-a73.cortex-a53 -funswitch-loops -funroll-all-loops -fpeel-loops -fsplit-loops -fversion-loops-for-strides -fsection-anchors -ftracer -mno-fix-cortex-a53-835769 -mno-fix-cortex-a53-843419 -freg-struct-return
+KBUILD_AFLAGS += -mcpu=cortex-a73.cortex-a53+crc+crypto -mtune=cortex-a73.cortex-a53 -funswitch-loops -funroll-all-loops -fpeel-loops -fsplit-loops -fversion-loops-for-strides -fsection-anchors -ftracer -mno-fix-cortex-a53-835769 -mno-fix-cortex-a53-843419 -freg-struct-return
 else ifeq ($(cc-name),clang)
-KBUILD_CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
-KBUILD_AFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
+KBUILD_CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73 -funroll-loops
+KBUILD_AFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73 -funroll-loops
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
