@@ -1699,7 +1699,6 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 			break;
 
 		if (ret == 1) {
-			ret = 0;
 			if (path->slots[0] == 0)
 				break;
 			path->slots[0]--;
@@ -1712,19 +1711,17 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 
 		ret = btrfs_del_item(trans, root, path);
 		if (ret)
-			break;
+			goto out;
 
 		btrfs_release_path(path);
 		inode = read_one_inode(root, key.offset);
-		if (!inode) {
-			ret = -EIO;
-			break;
-		}
+		if (!inode)
+			return -EIO;
 
 		ret = fixup_inode_link_count(trans, root, inode);
 		iput(inode);
 		if (ret)
-			break;
+			goto out;
 
 		/*
 		 * fixup on a directory may create new entries,
@@ -1733,6 +1730,8 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 		 */
 		key.offset = (u64)-1;
 	}
+	ret = 0;
+out:
 	btrfs_release_path(path);
 	return ret;
 }
@@ -1771,6 +1770,8 @@ static noinline int link_to_fixup_dir(struct btrfs_trans_handle *trans,
 		ret = btrfs_update_inode(trans, root, inode);
 	} else if (ret == -EEXIST) {
 		ret = 0;
+	} else {
+		BUG(); /* Logic Error */
 	}
 	iput(inode);
 
@@ -5970,7 +5971,6 @@ next:
 error:
 	if (wc.trans)
 		btrfs_end_transaction(wc.trans);
-	clear_bit(BTRFS_FS_LOG_RECOVERING, &fs_info->flags);
 	btrfs_free_path(path);
 	return ret;
 }
